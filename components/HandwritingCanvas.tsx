@@ -1,91 +1,75 @@
 "use client";
 import React, { useRef, useState, useEffect, useImperativeHandle, forwardRef } from 'react';
 
-// 外から clearCanvas を呼べるように forwardRef を使用
 export interface HandwritingCanvasHandle {
   clear: () => void;
-  getDataUrl: () => string | undefined;
+  getDataUrl: () => string;
 }
 
-const CANVAS_WIDTH = 460;
-const CANVAS_HEIGHT = 500;
+interface Props {
+  onStroke?: () => void;
+  width?: number;  // 追加
+  height?: number; // 追加
+}
 
-const HandwritingCanvas = forwardRef<HandwritingCanvasHandle, { onStroke: () => void }>((props, ref) => {
+export default forwardRef<HandwritingCanvasHandle, Props>(function HandwritingCanvas({ onStroke, width = 360, height = 400 }, ref) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const contextRef = useRef<CanvasRenderingContext2D | null>(null);
   const [isDrawing, setIsDrawing] = useState(false);
 
-  // 親コンポーネント（ActionWidget）から操作できるように公開
   useImperativeHandle(ref, () => ({
     clear: () => {
-      const ctx = contextRef.current;
-      if (ctx) ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+      const ctx = canvasRef.current?.getContext('2d');
+      if (ctx && canvasRef.current) {
+        ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+      }
     },
-    getDataUrl: () => canvasRef.current?.toDataURL('image/png')
+    getDataUrl: () => canvasRef.current?.toDataURL('image/png') || '',
   }));
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const dpr = window.devicePixelRatio || 1;
-    canvas.width = CANVAS_WIDTH * dpr;
-    canvas.height = CANVAS_HEIGHT * dpr;
-    canvas.style.width = `${CANVAS_WIDTH}px`;
-    canvas.style.height = `${CANVAS_HEIGHT}px`;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-    ctx.scale(dpr, dpr);
-    ctx.lineCap = "round";
-    ctx.lineJoin = "round";
-    ctx.strokeStyle = "#333333";
-    ctx.lineWidth = 4;
-    contextRef.current = ctx;
-  }, []);
+  const startDrawing = (e: React.MouseEvent | React.TouchEvent) => {
+    setIsDrawing(true);
+    draw(e);
+  };
 
-  const getCoordinates = (e: React.MouseEvent | React.TouchEvent) => {
-    const rect = canvasRef.current!.getBoundingClientRect();
-    const clientX = 'touches' in e ? e.touches[0].clientX : (e as React.MouseEvent).clientX;
-    const clientY = 'touches' in e ? e.touches[0].clientY : (e as React.MouseEvent).clientY;
-    return { x: clientX - rect.left, y: clientY - rect.top };
+  const draw = (e: React.MouseEvent | React.TouchEvent) => {
+    if (!isDrawing || !canvasRef.current) return;
+    const ctx = canvasRef.current.getContext('2d');
+    if (!ctx) return;
+
+    const rect = canvasRef.current.getBoundingClientRect();
+    const x = ('touches' in e) ? e.touches[0].clientX - rect.left : (e as React.MouseEvent).clientX - rect.left;
+    const y = ('touches' in e) ? e.touches[0].clientY - rect.top : (e as React.MouseEvent).clientY - rect.top;
+
+    ctx.lineWidth = 3;
+    ctx.lineCap = 'round';
+    ctx.strokeStyle = '#333';
+    ctx.lineTo(x, y);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+
+    if (onStroke) onStroke();
+  };
+
+  const stopDrawing = () => {
+    setIsDrawing(false);
+    const ctx = canvasRef.current?.getContext('2d');
+    ctx?.beginPath();
   };
 
   return (
     <canvas
       ref={canvasRef}
-      className="touch-none bg-transparent block cursor-crosshair touch-none bg-white"
-      onMouseDown={(e) => {
-        const { x, y } = getCoordinates(e);
-        contextRef.current?.beginPath();
-        contextRef.current?.moveTo(x, y);
-        setIsDrawing(true);
-        props.onStroke(); // 描画開始を親に通知
-      }}
-      onMouseMove={(e) => {
-        if (!isDrawing) return;
-        const { x, y } = getCoordinates(e);
-        contextRef.current?.lineTo(x, y);
-        contextRef.current?.stroke();
-      }}
-      onMouseUp={() => setIsDrawing(false)}
-      onMouseLeave={() => setIsDrawing(false)}
-      onTouchStart={(e) => {
-        if (e.cancelable) e.preventDefault();
-        const { x, y } = getCoordinates(e);
-        contextRef.current?.beginPath();
-        contextRef.current?.moveTo(x, y);
-        setIsDrawing(true);
-        props.onStroke();
-      }}
-      onTouchMove={(e) => {
-        if (!isDrawing) return;
-        const { x, y } = getCoordinates(e);
-        contextRef.current?.lineTo(x, y);
-        contextRef.current?.stroke();
-      }}
-      onTouchEnd={() => setIsDrawing(false)}
+      width={width}   // 親からの値を反映
+      height={height} // 親からの値を反映
+      className="block cursor-crosshair touch-none bg-white"
+      onMouseDown={startDrawing}
+      onMouseMove={draw}
+      onMouseUp={stopDrawing}
+      onMouseOut={stopDrawing}
+      onTouchStart={startDrawing}
+      onTouchMove={draw}
+      onTouchEnd={stopDrawing}
     />
   );
 });
-
-HandwritingCanvas.displayName = "HandwritingCanvas";
-export default HandwritingCanvas;

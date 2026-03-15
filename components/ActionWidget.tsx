@@ -1,15 +1,15 @@
 "use client";
 import React, { useRef, useState } from 'react';
 import HandwritingCanvas, { HandwritingCanvasHandle } from './HandwritingCanvas';
-import { Trash2, PlusCircle } from 'lucide-react'; // アイコンを追加してプロ感を出す
+import { Trash2, PlusCircle } from 'lucide-react';
 
-interface ActionWidgetProps {
-  onAddNote: (imageUrl: string) => void;
-}
-
-export default function ActionWidget({ onAddNote }: ActionWidgetProps) {
+export default function ActionWidget({ onAddNote }: { onAddNote: (url: string) => void }) {
   const canvasHandleRef = useRef<HandwritingCanvasHandle>(null);
   const [hasDrawn, setHasDrawn] = useState(false);
+
+  // ここでサイズを一括管理
+  const CANVAS_WIDTH = 360;
+  const CANVAS_HEIGHT = 400;
 
   const handleClear = () => {
     canvasHandleRef.current?.clear();
@@ -26,44 +26,40 @@ export default function ActionWidget({ onAddNote }: ActionWidgetProps) {
 
   return (
     <div className="flex flex-col h-full w-full gap-4">
-      {/* 描画エリア：絶対固定 */}
-      <div className="flex-shrink-0 mx-auto shadow-xl rounded-2xl border border-gray-200 overflow-hidden bg-white" 
-           style={{ width: 480, height: 480 }}>
+      {/* 描画エリアの枠サイズも変数に合わせる */}
+      <div 
+        className="flex-shrink-0 mx-auto shadow-xl rounded-2xl border border-gray-200 overflow-hidden bg-white" 
+        style={{ width: CANVAS_WIDTH, height: CANVAS_HEIGHT }}
+      >
         <HandwritingCanvas 
           ref={canvasHandleRef} 
+          width={CANVAS_WIDTH}
+          height={CANVAS_HEIGHT}
           onStroke={() => setHasDrawn(true)} 
         />
       </div>
       
-      {/* ボタンエリア：横並び（flex-row）かつ、縦に伸びる（flex-1） */}
+      {/* ボタンエリア */}
       <div className="flex flex-row gap-3 flex-1 min-h-0">
-        
-        {/* クリアボタン：小さめ（flex-1） */}
         <button 
           onClick={handleClear}
           disabled={!hasDrawn}
           className={`flex-1 flex flex-col items-center justify-center gap-2 text-sm font-bold rounded-2xl transition-all border-2
-            ${hasDrawn 
-              ? 'bg-white border-gray-300 text-gray-500 hover:bg-gray-100 active:scale-95' 
-              : 'bg-gray-100 border-transparent text-gray-300 cursor-not-allowed opacity-50'}`}
+            ${hasDrawn ? 'bg-white border-gray-300 text-gray-500 active:scale-95' : 'bg-gray-100 text-gray-300 opacity-50'}`}
         >
-          <Trash2 size={24} />
+          <Trash2 size={20} />
           <span>クリア</span>
         </button>
 
-        {/* 追加ボタン：大きく（flex-[3]） */}
         <button 
           onClick={handleAdd}
           disabled={!hasDrawn}
-          className={`flex-[3] flex flex-col items-center justify-center gap-2 text-2xl font-black rounded-3xl transition-all shadow-lg
-            ${hasDrawn 
-              ? 'bg-blue-600 text-white hover:bg-blue-700 active:scale-[0.98] shadow-blue-200' 
-              : 'bg-gray-300 text-gray-500 cursor-not-allowed shadow-none'}`}
+          className={`flex-[3] flex flex-col items-center justify-center gap-2 text-xl font-black rounded-3xl transition-all shadow-lg
+            ${hasDrawn ? 'bg-blue-600 text-white active:scale-[0.98]' : 'bg-gray-300 text-gray-500'}`}
         >
-          <PlusCircle size={32} />
-          <span>ノートに追加</span>
+          <PlusCircle size={28} />
+          <span>追加</span>
         </button>
-
       </div>
     </div>
   );
