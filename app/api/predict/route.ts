@@ -2,14 +2,21 @@ import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
   try {
-    // 実際には FormData を受け取るが、今は中身を無視して「解析したフリ」をする
     const formData = await request.formData();
-    console.log("データをアーカイブしました:", formData.get('audio_file'));
+    
+    // --- 【受信確認ログ】ここを追加 ---
+    const audio = formData.get('audio_file') as File;
+    const image = formData.get('image_file') as File;
 
-    // 擬似的な待ち時間（0.5秒）を作る（解析中...のUIを確認するため）
+    console.log('--- VocaSense Data Received ---');
+    console.log(`Audio File: ${audio?.name} (${audio?.size} bytes)`);
+    console.log(`Image File: ${image?.name} (${image?.size} bytes)`);
+    console.log('Timestamp:', new Date().toISOString());
+    // ------------------------------
+
+    // 擬似的な待ち時間
     await new Promise((resolve) => setTimeout(resolve, 800));
 
-    // 要件定義に基づいたダミーデータを返す
     const mockResponse = {
       status: "success",
       healthy: 0.04,
@@ -22,16 +29,14 @@ export async function POST(request: Request) {
         freq_sd: 30.0,
         speed: 5.3
       },
-      Conversation: "今日はとても天気が良くて、散歩に行きたい気分ですね。",
+      Conversation: "Vercelサーバーで正常にデータを受信しました。",
       timestamp: new Date().toISOString()
     };
 
     return NextResponse.json(mockResponse);
 
   } catch (error) {
-    return NextResponse.json(
-      { status: 'error', message: '送信に失敗しました' },
-      { status: 500 }
-    );
+    console.error('API Error:', error);
+    return NextResponse.json({ status: 'error' }, { status: 500 });
   }
 }

@@ -46,7 +46,8 @@ export default function HomePage() {
       const formData = new FormData();
       formData.append('audio_file', latestAudioBlob, 'recording.wav');
       
-      const latestNote = notes;
+      const latestNote = notes[1];
+      if (!latestNote) return;
       const resImg = await fetch(latestNote.imageUrl);
       const imageBlob = await resImg.blob();
       formData.append('image_file', imageBlob, 'drawing.png');
@@ -77,7 +78,7 @@ export default function HomePage() {
       
       {/* 1. 解析中オーバーレイ */}
       {isAnalyzing && (
-        <div className="fixed inset-0 z- bg-black/60 backdrop-blur-md flex flex-col items-center justify-center text-white">
+        <div className="fixed inset-0 z-100 bg-black/60 backdrop-blur-md flex flex-col items-center justify-center text-white">
           <div className="w-16 h-16 border-4 border-blue-400 border-t-transparent rounded-full animate-spin mb-4" />
           <p className="text-xl font-bold tracking-widest animate-pulse">VocaSense 解析中...</p>
         </div>
