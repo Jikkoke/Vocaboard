@@ -19,7 +19,6 @@ export default function HomePage() {
   const [isRecording, setIsRecording] = useState(false);
   const [notes, setNotes] = useState<Note[]>([]);
   
-  // 通信・解析用のState
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [latestAudioBlob, setLatestAudioBlob] = useState<Blob | null>(null);
   const [analysisResult, setAnalysisResult] = useState<any>(null);
@@ -39,36 +38,55 @@ export default function HomePage() {
 
   // 送信ボタン押下時の処理
   const handleAnalyze = async () => {
+    // 1. バリデーションチェック
     if (!latestAudioBlob || notes.length === 0) {
-      alert(`録音: ${!!latestAudioBlob}, メモ数: ${notes.length}`);
+      alert(`準備ができていません。\n録音データ: ${!!latestAudioBlob ? "OK" : "なし"}\nメモ数: ${notes.length}`);
       return;
     }
 
     setIsAnalyzing(true);
+    console.log("解析プロセス開始...");
+
     try {
       const formData = new FormData();
+      
+      // 音声の追加
       formData.append('audio_file', latestAudioBlob, 'recording.wav');
       
+      // 【修正ポイント1】最新の付箋は notes です
       const latestNote = notes[1];
-      if (!latestNote) return;
+      console.log("画像取得開始:", latestNote.id);
+
+      // 画像をBlobに変換して追加
       const resImg = await fetch(latestNote.imageUrl);
       const imageBlob = await resImg.blob();
       formData.append('image_file', imageBlob, 'drawing.png');
 
-      // Vercel API Route (モック版) へ送信
+      // 2. Vercel API への送信
+      console.log("Vercelへデータ送信中...");
       const response = await fetch('/api/predict', {
         method: 'POST',
         body: formData,
+        cache: 'no-store' // キャッシュを無効化
       });
 
-      if (!response.ok) throw new Error("通信エラー");
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`サーバーエラー: ${response.status} ${errorText}`);
+      }
 
       const result = await response.json();
+      console.log("解析結果受信:", result);
+      
+      // Stateの更新
       setAnalysisResult(result);
+      
+      // 受信確認用アラート
+      alert(`解析完了！\n判定: ${result.healthy > 0.5 ? "健康" : "要確認"}\nConversation: ${result.Conversation.substring(0, 20)}...`);
 
-    } catch (error) {
-      console.error(error);
-      alert("解析に失敗しました。再度お試しください。");
+    } catch (error: any) {
+      console.error("解析エラー:", error);
+      alert(`解析に失敗しました:\n${error.message}`);
     } finally {
       setIsAnalyzing(false);
     }
@@ -81,7 +99,8 @@ export default function HomePage() {
       
       {/* 1. 解析中オーバーレイ */}
       {isAnalyzing && (
-        <div className="fixed inset-0 z-100 bg-black/60 backdrop-blur-md flex flex-col items-center justify-center text-white">
+        // 【修正ポイント2】z- と記述（括弧が必要）
+        <div className="fixed inset-0 z- bg-black/60 backdrop-blur-md flex flex-col items-center justify-center text-white">
           <div className="w-16 h-16 border-4 border-blue-400 border-t-transparent rounded-full animate-spin mb-4" />
           <p className="text-xl font-bold tracking-widest animate-pulse">VocaSense 解析中...</p>
         </div>
@@ -94,7 +113,6 @@ export default function HomePage() {
       </div>
 
       <main className="flex flex-1 h-full p-4 pt-16 gap-6 overflow-hidden">
-        {/* 左側：メインエリア（付箋 + 録音） */}
         <section className={`flex-1 h-full flex flex-col min-h-0 overflow-hidden transition-all duration-500 rounded-[40px] border shadow-inner
           ${isRecording ? 'border-red-300 bg-red-50/20' : 'border-gray-200 bg-white/40'}`}>
           
@@ -110,7 +128,6 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* 右側：キャンバス ＋ 解析実行ボタン */}
         <section className="h-full flex flex-col pb-2 min-h-0 w-[550px] flex-shrink-0 gap-6">
           <div className="flex-none bg-white p-4 rounded-[40px] border border-gray-200 shadow-sm">
             <ActionWidget onAddNote={handleAddNote} />
@@ -129,7 +146,6 @@ export default function HomePage() {
               <span>VocaSense 解析</span>
             </button>
 
-            {/* ステータスガイド */}
             <div className="mt-6 flex flex-col items-center gap-2">
               {!latestAudioBlob ? (
                 <span className="text-red-400 font-bold flex items-center gap-2 bg-red-50 px-4 py-1 rounded-full text-sm">
@@ -149,7 +165,6 @@ export default function HomePage() {
         </section>
       </main>
 
-      {/* 解析レポートモーダル */}
       {analysisResult && (
         <AnalysisReportModal 
           data={analysisResult} 
