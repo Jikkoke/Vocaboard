@@ -39,7 +39,10 @@ export default function HomePage() {
 
   // 送信ボタン押下時の処理
   const handleAnalyze = async () => {
-    if (!latestAudioBlob || notes.length === 0) return;
+    if (!latestAudioBlob || notes.length === 0) {
+      alert(`録音: ${!!latestAudioBlob}, メモ数: ${notes.length}`);
+      return;
+    }
 
     setIsAnalyzing(true);
     try {
