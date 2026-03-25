@@ -2,7 +2,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Mic, Square, Save } from 'lucide-react';
 
-export default function RecordingWidget({ onStatusChange }: { onStatusChange?: (is: boolean) => void }) {
+export default function RecordingWidget({ onStatusChange, onRecordingComplete }: { onStatusChange?: (is: boolean) => void, onRecordingComplete?: (blob: Blob) => void }) {
   const [isRecording, setIsRecording] = useState(false);
   const [duration, setDuration] = useState(0);
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
@@ -82,9 +82,14 @@ export default function RecordingWidget({ onStatusChange }: { onStatusChange?: (
       const mediaRecorder = new MediaRecorder(stream);
       mediaRecorderRef.current = mediaRecorder;
       audioChunksRef.current = [];
-      mediaRecorder.ondataavailable = (e) => audioChunksRef.current.push(e.data);
+      mediaRecorder.ondataavailable = (e) => {
+        if (e.data.size > 0) audioChunksRef.current.push(e.data);
+      }
+
       mediaRecorder.onstop = () => {
-        setAudioBlob(new Blob(audioChunksRef.current, { type: mediaRecorder.mimeType }));
+        const blob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+        setAudioBlob(blob);
+        onRecordingComplete?.(blob);
       };
 
       mediaRecorder.start();
