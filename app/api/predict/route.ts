@@ -7,7 +7,7 @@ export async function POST(request: Request) {
   try {
     // 1. ブラウザからのデータ受信
     const formData = await request.formData();
-    const audioFile = formData.get('audio_file') as File;
+    const audioFile = formData.get('file') as File;
 
     if (!audioFile) {
       console.error("Vercel Error: No audio_file in request");
@@ -17,7 +17,7 @@ export async function POST(request: Request) {
     // 2. Jetson (Flask) へ送るための準備
     const jetsonFormData = new FormData();
     // server.py の仕様に合わせて 'audio_file' というキー名で音声をセット
-    jetsonFormData.append('audio_file', audioFile, 'recording.wav');
+    jetsonFormData.append('file', audioFile, 'recording.wav');
 
     console.log(`Forwarding to Jetson: ${audioFile.size} bytes`);
 
