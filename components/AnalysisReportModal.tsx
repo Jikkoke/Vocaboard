@@ -64,9 +64,10 @@ export default function AnalysisReportModal({ data, onClose }: AnalysisReportMod
               <h3 className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em]">Detailed Metrics / 詳細指標</h3>
               <div className="grid grid-cols-2 gap-4">
                 <MetricCard icon={<Brain size={20}/>} label="語彙多様性" value={data.details?.ttr?.toFixed(2) || "0.00"} />
+                 <MetricCard icon={<Activity size={20}/>} label="抽象語率" value={`${((data.details?.abstract_rate || 0) * 100).toFixed(1)}%`} />
                 <MetricCard icon={<Zap size={20}/>} label="発話速度" value={`${data.details?.speed || 0}/s`} />
                 <MetricCard icon={<Clock size={20}/>} label="沈黙率" value={`${((data.details?.silence_ratio || 0) * 100).toFixed(1)}%`} />
-                <MetricCard icon={<Activity size={20}/>} label="抽象語率" value={`${((data.details?.abstract_rate || 0) * 100).toFixed(1)}%`} />
+                 <MetricCard icon={<Activity size={20}/>} label="平均周波数標準偏差" value={`${((data.details?.f0_std || 0) * 100).toFixed(1)}%`} />
               </div>
             </div>
           </div>
