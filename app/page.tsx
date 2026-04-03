@@ -39,8 +39,9 @@ export default function HomePage() {
   // 送信ボタン押下時の処理
   const handleAnalyze = async () => {
     // 1. バリデーションチェック
-    if (!latestAudioBlob || notes.length === 0) {
-      alert(`準備ができていません。\n録音データ: ${!!latestAudioBlob ? "OK" : "なし"}\nメモ数: ${notes.length}`);
+    // if (!latestAudioBlob || notes.length === 0) 
+    if (!latestAudioBlob ){
+      alert(`準備ができていません。\n録音データ: ${!!latestAudioBlob ? "OK" : "なし"});
       return;
     }
 
