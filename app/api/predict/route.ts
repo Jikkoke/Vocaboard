@@ -68,6 +68,7 @@ export async function POST(request: Request) {
         speed: result.features?.articulation_rate ?? 0,
         silence_ratio: result.features?.silence_ratio ?? 0,
         abstract_rate: result.features?.abstract_rate ?? 0,
+        f0_std: result.features?.f0_std ?? 0,
       },
       timestamp: new Date().toISOString(),
     };
