@@ -84,7 +84,7 @@ export default function AnalysisReportModal({ data, onClose }: AnalysisReportMod
                <MessageSquare size={14} /> Transcription / 発話内容
              </h3>
              <div className="p-6 bg-blue-50/50 rounded-2xl border border-blue-100 text-lg text-blue-900 font-medium leading-relaxed italic">
-               「{data.text || "発話データなし"}」
+               「{data.text}」
              </div>
           </div>
         </div>
