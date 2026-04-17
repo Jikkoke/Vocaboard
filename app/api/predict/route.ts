@@ -53,24 +53,44 @@ export async function POST(request: Request) {
     // オプショナルチェイニング (?.) と Null合体演算子 (??) を多用して、
     // どんなにデータが欠けていても「undefined」を返さないようにガードします。
     const formattedResponse = {
-      status: "success",
-      // Healthy (normal), MCI, Dementia の各確率を 0.0 ~ 1.0 の範囲に直す
-      healthy: (result.normal ?? 0) / 100,
-      MCI: (result.MCI ?? 0) / 100,
-      Dementia: (result.dementia ?? 0) / 100,
-      // 文字起こしテキスト
-      Conversation: result.text || "文字起こしデータが空です",
-      // スコア
-      score: result.score ?? 0,
-      // 各種詳細パラメータ
-      details: {
-        ttr: result.features?.ttr ?? 0,
-        speed: result.features?.articulation_rate ?? 0,
-        silence_ratio: result.features?.silence_ratio ?? 0,
-        abstract_rate: result.features?.abstract_rate ?? 0,
-      },
-      timestamp: new Date().toISOString(),
-    };
+  status: "success",
+  text: result.text || "文字起こしデータが空です",
+  
+  // --- 音声解析の結果 (横スクロールの1枚目用) ---
+  audio: {
+    prediction: result.pred_audio || "不明",
+    score: result.score_audio ?? 0,
+    probabilities: {
+      healthy: (result.normal_audio ?? 0) / 100,
+      MCI: (result.MCI_audio ?? 0) / 100,
+      Dementia: (result.dementia_audio ?? 0) / 100,
+    },
+    features: {
+      f0_std: result.features?.f0_std ?? 0,
+      speed: result.features?.articulation_rate ?? 0,
+      silence: result.features?.silence_ratio ?? 0,
+    }
+  },
+
+  // --- 言語解析の結果 (横スクロールの2枚目用) ---
+  lang: {
+    prediction: result.pred_lang || "不明",
+    score: result.score_lang ?? 0,
+    probabilities: {
+      healthy: (result.normal_lang ?? 0) / 100,
+      MCI: (result.MCI_lang ?? 0) / 100,
+      Dementia: (result.dementia_lang ?? 0) / 100,
+    },
+    features: {
+      filler: result.features?.filler_rate ?? 0,
+      abstract: result.features?.abstract_rate ?? 0,
+      depth: result.features?.max_depth ?? 0,
+      noun: result.features?.noun_ratio ?? 0,
+    }
+  },
+  
+  timestamp: new Date().toISOString(),
+};
 
     return NextResponse.json(formattedResponse);
 
