@@ -122,3 +122,12 @@ function ProbabilityChart({ data }: { data: any }) {
     </div>
   );
 }
+function MetricCard({ icon, label, value }: { icon: React.ReactNode, label: string, value: string | number }) {
+  return (
+    <div className="p-5 bg-white border border-gray-100 rounded-2xl shadow-sm">
+      <div className="text-indigo-500 mb-3 bg-indigo-50 w-fit p-2 rounded-lg">{icon}</div>
+      <p className="text-[10px] font-extrabold text-gray-400 uppercase tracking-tighter mb-1">{label}</p>
+      <p className="text-xl font-black text-gray-800">{value}</p>
+    </div>
+  );
+}
