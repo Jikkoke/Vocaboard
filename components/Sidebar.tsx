@@ -45,6 +45,15 @@ export default function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
               <span>ホーム</span>
             </div>
             
+            <Link href="/register" onClick={() => setIsOpen(false)}>
+              <div className={`flex items-center gap-3 p-4 rounded-2xl font-bold transition-colors ${
+                pathname === "/register" ? "bg-blue-50 text-blue-600" : "text-gray-500 hover:bg-gray-50"
+              }`}>
+                <Mic size={22} /> 
+                <span>音声登録（デモ用）</span>
+              </div>
+            </Link>
+            
             <div className="flex items-center gap-3 p-4 text-gray-500 hover:bg-gray-50 rounded-2xl transition-colors cursor-pointer">
               <BarChart2 size={22} /> 
               <span>解析画面（グラフ）</span>
