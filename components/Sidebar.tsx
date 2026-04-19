@@ -9,6 +9,11 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
+  // --- ここで変数を定義します (returnの中ではなく、関数の直下) ---
+  const linkBaseStyle = "flex items-center gap-3 p-4 rounded-2xl font-bold transition-colors cursor-pointer";
+  const activeStyle = "bg-blue-50 text-blue-600";
+  const inactiveStyle = "text-gray-500 hover:bg-gray-50";
+  // ---------------------------------------------------------
   return (
     <>
       {/* ハンバーガーボタン: サイドバーの外に出しておく */}
