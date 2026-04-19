@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import Link from 'next/link';
-import { Menu, X, Home, BarChart2 } from 'lucide-react';
+import { Menu, X, Home, BarChart2, Mic } from 'lucide-react';
 import { usePathname } from 'next/navigation'; // 1. インポートを確認
 
 interface SidebarProps {
