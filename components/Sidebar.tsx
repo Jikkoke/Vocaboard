@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import Link from 'next/link';
 import { Menu, X, Home, BarChart2 } from 'lucide-react';
 
 interface SidebarProps {
