@@ -2,7 +2,7 @@
 import React from "react";
 import Link from 'next/link';
 import { Menu, X, Home, BarChart2, Mic } from 'lucide-react';
-import { Mic, LayoutDashboard, Settings, PieChart } from 'lucide-react';
+import { LayoutDashboard, Settings, PieChart } from 'lucide-react';
 import { usePathname } from 'next/navigation'; // 1. インポートを確認
 
 interface SidebarProps {
