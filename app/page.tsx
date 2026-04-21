@@ -167,6 +167,12 @@ export default function HomePage() {
           onClose={() => setAnalysisResult(null)} 
         />
       )}
+      {/* 作成したコンポーネントを配置 */}
+      <AnalysisReportModal 
+        isOpen={isDemoOpen} 
+        onClose={() => setIsDemoOpen(false)} 
+      />
+      
     </div>
   );
 }
