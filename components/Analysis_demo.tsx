@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { X, Brain, Zap, Clock, Activity } from 'lucide-react';
 import MetricCard from './MetricCard';
 
-const AnalysisReportModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) => {
+const Analysis_demo = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) => {
   const [animate, setAnimate] = useState(false);
 
   useEffect(() => {
