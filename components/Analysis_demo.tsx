@@ -24,9 +24,9 @@ const defaultData = {
     confidence: '65.4%',
     // 言語独自の確率データ
     probabilities: [
-      { label: '健康', color: 'bg-emerald-500', width: 'w-[14.6%]', val: '14.6%' },
+      { label: '健康', color: 'bg-emerald-500', width: 'w-[4.6%]', val: '4.6%' },
       { label: 'MCI', color: 'bg-amber-400', width: 'w-[65.4%]', val: '65.4%' },
-      { label: '認知症', color: 'bg-rose-500', width: 'w-[20.0%]', val: '20.0%' }
+      { label: '認知症', color: 'bg-rose-500', width: 'w-[30.0%]', val: '30.0%' }
     ],
     metrics: [
       { label: '抽象表現割合', value: '3.3%', color: 'text-rose-500' },
