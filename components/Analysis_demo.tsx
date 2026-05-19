@@ -74,7 +74,7 @@ const Analysis_demo = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => vo
                TRANSCRIPTION / 発話内容
             </h3>
             <div className="bg-indigo-50/50 p-8 rounded-[24px] border border-indigo-100/50">
-              <p className="text-indigo-600 font-bold text-xl italic leading-relaxed text-center">「ほら、あそこの、あの人が持ってきた、あれがすごく良かったのよ。名前は何だったかな？、ええと、あれよ。」</p>
+              <p className="text-indigo-600 font-bold text-xl italic leading-relaxed text-center">「学生時代なんかあれして。あーお酒若い時のんだから、カラオケ歌ったりね、あーわからんこういう時急に言われても」</p>
             </div>
           </div>
         </div>
